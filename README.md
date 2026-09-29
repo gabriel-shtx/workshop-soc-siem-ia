@@ -39,6 +39,27 @@ Um alerta entra numa ponta. Um **e-mail investigado** — com veredito, reputaç
 
 ---
 
+## 📸 Capturas de tela
+
+O pipeline funcionando, na ordem em que o alerta percorre a esteira:
+
+**1. O SIEM no ar** — Wazuh com o agente ativo e os alertas chegando.
+![Dashboard do Wazuh](images/dashboard-wazuh.png)
+
+**2. A detecção** — o alerta de nível 15 (força bruta SSH seguida de login com sucesso) em Threat Hunting.
+![Alerta de nível 15 no Wazuh](images/alerta-nivel-15.png)
+
+**3. O contexto** — a técnica MITRE ATT&CK anexada ao alerta.
+![Técnica MITRE ATT&CK no alerta](images/mitre-tag.png)
+
+**4. A automação** — o workflow completo no n8n, ligando os seis nodes.
+![Workflow completo no n8n](images/n8n-workflow.png)
+
+**5. A entrega** — o e-mail acionável que chega ao analista, já investigado.
+![E-mail de incidente gerado pelo pipeline](images/email-recebido.png)
+
+---
+
 ## 📚 As três aulas
 
 | # | Aula | O que o participante aprende |
