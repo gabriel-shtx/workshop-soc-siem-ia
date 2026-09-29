@@ -1,0 +1,55 @@
+<!--
+  ============================================================================
+  Regras personalizadas · Workshop SOC, SIEM e IA na Prática
+  Imperium Fox Academy · Gabriel Shimbo Tixiliski
+  ----------------------------------------------------------------------------
+  Arquivo: /var/ossec/etc/rules/local_rules.xml  (no Wazuh Manager)
+
+  ATENÇÃO — antes de usar em qualquer ambiente:
+   * IDs personalizados começam em 100000. Abaixo disso são reservados pelo
+     Wazuh; sobrescrever regra nativa é erro clássico.
+   * Os números em <if_sid> / <if_matched_sid> apontam para regras NATIVAS
+     (ex.: 5715 = login SSH com sucesso, 5712 = falhas de SSH). Esses números
+     PODEM MUDAR entre versões do Wazuh.
+   * Valide sempre antes de confiar:
+         sudo /var/ossec/bin/wazuh-logtest
+         sudo /var/ossec/bin/wazuh-analysisd -t
+   * Depois de editar, reinicie o manager:
+         sudo systemctl restart wazuh-manager
+  ============================================================================
+-->
+
+<!-- ========================================================================
+     AULA 3 — cenário principal do pipeline automatizado
+     Força bruta SSH seguida de login BEM-SUCEDIDO, do mesmo IP de origem.
+     É o evento que dispara o fluxo Wazuh → n8n → AbuseIPDB → IA → Resend.
+     ======================================================================== -->
+<group name="custom_ssh,">
+  <rule id="100501" level="15">
+    <if_sid>5715</if_sid>                    <!-- login SSH com sucesso -->
+    <if_matched_sid>5712</if_matched_sid>    <!-- após falhas de SSH      -->
+    <same_srcip>yes</same_srcip>             <!-- do MESMO IP de origem    -->
+    <description>SSH_BruteForce_Seguido_Sucesso</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+  </rule>
+</group>
+
+<!-- ========================================================================
+     AULA 2 — detecção de comportamento (correlação de TTPs)
+     Regra didática do grupo fictício "Evil Art": um usuário é criado logo
+     após uma força bruta no sudo. Um evento sozinho é ambíguo; a SEQUÊNCIA
+     é que denuncia o comportamento do adversário.
+     ======================================================================== -->
+<group name="evil_art,">
+  <rule id="100210" level="14" timeframe="300">
+    <if_sid>5902</if_sid>                    <!-- usuário criado no endpoint -->
+    <if_matched_sid>5503</if_matched_sid>    <!-- após falhas de autenticação -->
+    <description>Comportamento do Evil Art detectado!</description>
+    <mitre>
+      <id>T1110.001</id>
+      <id>T1136.001</id>
+    </mitre>
+  </rule>
+</group>

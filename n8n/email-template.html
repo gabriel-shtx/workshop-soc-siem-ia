@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+</head>
+<body style="font-family: Arial, Helvetica, sans-serif; background-color: #f4f6f8; padding: 20px;">
+  <div style="max-width: 800px; margin: auto; background: #ffffff; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+    <div style="background-color: #1f2937; color: white; padding: 20px;">
+      <h2 style="margin: 0;">🚨 Alerta de Segurança</h2>
+      <p style="margin: 8px 0 0 0;">
+        Detecção automatizada pelo Wazuh + n8n
+      </p>
+    </div>
+    <div style="padding: 20px;">
+      <div style="background-color: #fee2e2; border-left: 5px solid #dc2626; padding: 15px; margin-bottom: 20px;">
+        <h2 style="margin: 0 0 8px 0;">
+          {{ $json.veredito }}
+        </h2>
+        <p style="margin: 0;">
+          <strong>Severidade:</strong> {{ $json.severity }}
+          &nbsp;&nbsp;
+          <strong>Confiança:</strong> {{ $json.confidence }}%
+        </p>
+      </div>
+
+      <h3>📌 Incidente</h3>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Regra</strong></td>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ $('NORMALIZAR').item.json['nome-alerta'] }}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Nível Wazuh</strong></td>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ $('NORMALIZAR').item.json['level-alerta'] }}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Host</strong></td>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ $('NORMALIZAR').item.json['nome-agente'] }}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Usuário</strong></td>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ $('NORMALIZAR').item.json.usuario }}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>IP de origem</strong></td>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ $('NORMALIZAR').item.json.data.srcip }}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px;"><strong>Porta</strong></td>
+          <td style="padding: 8px;">{{ $('NORMALIZAR').item.json.srcport }}</td>
+        </tr>
+      </table>
+
+      <h3>🌐 Reputação do IP</h3>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Abuse Confidence Score</strong></td>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ $('ABUSE-IPDB').item.json.data.abuseConfidenceScore }}%</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Total de reports</strong></td>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ $('ABUSE-IPDB').item.json.data.totalReports }}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>País</strong></td>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ $('ABUSE-IPDB').item.json.data.countryCode }}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>ISP</strong></td>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ $('ABUSE-IPDB').item.json.data.isp }}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px;"><strong>Tipo de uso</strong></td>
+          <td style="padding: 8px;">{{ $('ABUSE-IPDB').item.json.data.usageType }}</td>
+        </tr>
+      </table>
+
+      <h3>🤖 Análise do SOC</h3>
+      <div style="background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px;">
+        <p><strong>Motivo:</strong><br>{{ $json.reason }}</p>
+        <p><strong>Recomendação:</strong><br>{{ $json.recommendation }}</p>
+      </div>
+
+      <h3>⚡ Ações imediatas</h3>
+      <ul>
+        {{ $json.immediate_actions.map(action => `<li style="margin-bottom: 6px;">${action}</li>`).join('') }}
+      </ul>
+
+      <h3>🔎 Etapas de investigação</h3>
+      <ol>
+        {{ $json.investigation_steps.map(step => `<li style="margin-bottom: 6px;">${step}</li>`).join('') }}
+      </ol>
+
+      <h3>📄 Log original</h3>
+      <div style="background-color: #111827; color: #e5e7eb; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 12px; overflow-wrap: break-word;">
+        {{ $('NORMALIZAR').item.json.full_log }}
+      </div>
+    </div>
+    <div style="background-color: #f3f4f6; padding: 15px; text-align: center; color: #6b7280; font-size: 12px;">
+      Alerta gerado automaticamente pelo pipeline Wazuh + n8n + AbuseIPDB + Mistral Nemotron
+    </div>
+  </div>
+</body>
+</html>

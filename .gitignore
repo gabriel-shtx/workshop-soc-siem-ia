@@ -1,0 +1,21 @@
+# Segredos — jamais versionar
+.env
+*.key
+*.pem
+
+# Arquivos de instalação/segredos do Wazuh
+wazuh-install-files*
+*.tar
+
+# Credenciais exportadas do n8n
+n8n/credentials*.json
+
+# Python
+__pycache__/
+*.pyc
+
+# SO / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
